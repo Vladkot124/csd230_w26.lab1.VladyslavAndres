@@ -1,15 +1,35 @@
 classDiagram
-    Editable <|--Product
-    Product <|--Ticket
-    Product <|--Publication
+
+    ProductItem <|--Ticket
+    ProductItem <|--Publication
     Publication <|-- Book
     Publication <|-- Magazine
     Magazine <|-- DiscMag
-    SaleableItem <|.. Product
-    Serializable <|.. Product
-    Product <-- CashTill
+    SaleableItem <|.. ProductItem
+    Serializable <|.. ProductItem
+    ProductItem <-- CashTill
+    Cart "0..*" -- "0..*" ProductItem : contains
+    ProductItem <|-- ElectronicDevice
+    ElectronicDevice <|-- Laptop
+    ElectronicDevice <|-- Phone
 
-    class Product{
+    class ElectronicDevice{
+        <<abstract>>
+        -String brand
+    }
+    class Laptop{
+        -int ramGb
+    }
+    class Phone{
+        -boolean has5g
+    }
+
+    class Cart{
+        -Long id
+    }
+
+
+    class ProductItem{
         -String productId
     }
 
@@ -21,19 +41,7 @@ classDiagram
         +price
         +sellItem()
     }
-    class Editable{
-        <<abstract>>
-        -Scanner input
-        +String getInput(String)
-        +int getInput(int)
-        +double getInput(double)
-        +boolean getInput(boolean)
-        +Date getInput(Date)
-        +Enum getInput(Enum)
-        +edit()*
-        +initialize()*
 
-    }
     class Publication{
         <<Abstract>>
         -String title
