@@ -1,49 +1,85 @@
 package csd230.lab1.entities;
+
 import jakarta.persistence.*;
-import java.util.LinkedHashSet;
+import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
-
-
 @Entity
-@Table(name = "cart_entity")
+@Table(name = "carts")
 public class CartEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private String customerName;
+
+    private LocalDateTime createdAt;
+
+    @ManyToMany
     @JoinTable(
             name = "cart_products",
             joinColumns = @JoinColumn(name = "cart_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id")
     )
-    private Set<ProductEntity> products = new LinkedHashSet<>();
+    private Set<ProductEntity> products = new HashSet<>();
 
+    public CartEntity() {
+    }
+
+    public CartEntity(String customerName) {
+        this.customerName = customerName;
+        this.createdAt = LocalDateTime.now();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Set<ProductEntity> getProducts() {
+        return products;
+    }
+
+    public void setProducts(Set<ProductEntity> products) {
+        this.products = products;
+    }
+
+    // ✅ REQUIRED: maintain BOTH sides
     public void addProduct(ProductEntity product) {
         this.products.add(product);
         product.getCarts().add(this);
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public Set<ProductEntity> getProducts() { return products; }
-    public void setProducts(Set<ProductEntity> products) { this.products = products; }
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof CartEntity)) return false;
-        CartEntity other = (CartEntity) o;
-        return id != null && id.equals(other.id);
+    // ✅ REQUIRED: maintain BOTH sides (prevents FK delete crash later)
+    public void removeProduct(ProductEntity product) {
+        this.products.remove(product);
+        product.getCarts().remove(this);
     }
+
     @Override
     public String toString() {
-        return "CartEntity{id=" + id + ", productsCount=" + products.size() + "}";
-    }
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
+        return "CartEntity{" +
+                "id=" + id +
+                ", customerName='" + customerName + '\'' +
+                ", productsCount=" + (products == null ? 0 : products.size()) +
+                ", createdAt=" + createdAt +
+                '}';
     }
 }

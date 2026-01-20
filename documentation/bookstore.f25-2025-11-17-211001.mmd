@@ -1,49 +1,61 @@
 classDiagram
+    CartEntity "0..*" -- "0..*" SmartphoneEntity
+    CartEntity "0..*" -- "0..*" LaptopEntity
 
-    ProductItem <|--Ticket
-    ProductItem <|--Publication
+    ProductItem <|-- Ticket
+    ProductItem <|-- Publication
     Publication <|-- Book
     Publication <|-- Magazine
     Magazine <|-- DiscMag
+
     SaleableItem <|.. ProductItem
     Serializable <|.. ProductItem
+
     ProductItem <-- CashTill
     Cart "0..*" -- "0..*" ProductItem : contains
-    ProductItem <|-- ElectronicDevice
-    ElectronicDevice <|-- Laptop
-    ElectronicDevice <|-- Phone
 
-    class ElectronicDevice{
+    ProductEntity <|-- SmartphoneEntity
+    ProductEntity <|-- LaptopEntity
+
+    class ProductEntity {
         <<abstract>>
-        -String brand
-    }
-    class Laptop{
-        -int ramGb
-    }
-    class Phone{
-        -boolean has5g
     }
 
-    class Cart{
+    class SmartphoneEntity {
+        +String brand
+        +int warrantyMonths
+        +int storageGb
+        +boolean has5g
+    }
+
+    class LaptopEntity {
+        +String brand
+        +int warrantyMonths
+        +int ramGb
+        +String cpuModel
+    }
+
+    class CartEntity
+    class Cart {
         -Long id
     }
 
-
-    class ProductItem{
+    class ProductItem {
         -String productId
     }
 
-    class Serializable{
+    class Serializable {
         <<interface>>
     }
-    class Ticket{
-        +description
-        +price
+
+    class Ticket {
+        +String description
+        +double price
         +sellItem()
     }
 
-    class Publication{
-        <<Abstract>>
+    class Publication {
+        <<abstract>>
         -String title
         -double price
         -int copies
@@ -54,9 +66,9 @@ classDiagram
         +toString()
         +equals()
         +hashCode()
-
     }
-    class Book{
+
+    class Book {
         -String author
         +edit()
         +initialize()
@@ -68,38 +80,39 @@ classDiagram
         +toString()
         +equals()
         +hashCode()
-
     }
-    class Magazine{
+
+    class Magazine {
         -int orderQty
         -java.util.Date currentIssue
 
         +Magazine()
-        +Magazine(int orderQty, Date currentIssue, String title, double price, int copies)
+        +Magazine(int orderQty, java.util.Date currentIssue, String title, double price, int copies)
 
         +edit()
         +initialize()
         +sellItem()
     }
-    class DiscMag{
+
+    class DiscMag {
         -boolean hasDisc
         +edit()
         +initialize()
         +sellItem()
 
         +DiscMag()
-        +DiscMag(boolean, hasDisc, int orderQty, Date currentIssue, String title, double price, int copies)
-
+        +DiscMag(boolean hasDisc, int orderQty, java.util.Date currentIssue, String title, double price, int copies)
     }
-    class CashTill{
+
+    class CashTill {
         -double runningTotal
         +CashTill()
         +showTotal()
         +sellItem(SaleableItem item)
     }
+
     class SaleableItem {
         <<interface>>
         +sellItem()
         +getPrice()
-
     }

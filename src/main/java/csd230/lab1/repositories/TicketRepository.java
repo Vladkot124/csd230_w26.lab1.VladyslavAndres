@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface TicketRepository extends JpaRepository<TicketEntity, Long> {
-    // “similar relevant query” example
-    List<TicketEntity> findByDescriptionContainingIgnoreCase(String text);
+    List<TicketEntity> findByEventName(String eventName);
+    List<TicketEntity> findByNameLike(String pattern);
 }

@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface MagazineRepository extends JpaRepository<MagazineEntity, Long> {
-    // “similar relevant query” example
-    List<MagazineEntity> findByTitleContainingIgnoreCase(String title);
+    List<MagazineEntity> findByNameLike(String pattern);
+    List<MagazineEntity> findByPublisher(String publisher);
 }

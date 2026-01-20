@@ -1,40 +1,75 @@
 package csd230.lab1.entities;
 
-import csd230.lab1.pojos.SaleableItem;
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-import java.io.Serializable;
 
 @Entity
 @Table(name = "products")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "product_type", discriminatorType = DiscriminatorType.STRING)
-public abstract class ProductEntity implements Serializable, SaleableItem {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+public abstract class ProductEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private String name;
+
+    private String description;
+
+    @Column(nullable = false)
+    private double price;
+
+    // inverse side of many-to-many (CartEntity owns join table)
     @ManyToMany(mappedBy = "products")
     private Set<CartEntity> carts = new HashSet<>();
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public Set<CartEntity> getCarts() { return carts; }
-    public void setCarts(Set<CartEntity> carts) { this.carts = carts; }
 
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "{id=" + id + "} : " + super.toString();
-    }
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ProductEntity)) return false;
-        ProductEntity other = (ProductEntity) o;
-        return id != null && id.equals(other.id);
+    protected ProductEntity() {
     }
 
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
+    protected ProductEntity(String name, String description, double price) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    // ✅ FIX for your UPDATE section
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    // ✅ FIX for CartEntity add/remove both sides
+    public Set<CartEntity> getCarts() {
+        return carts;
+    }
+
+    // Optional but safe (keeps JPA from you accidentally replacing the set)
+    protected void setCarts(Set<CartEntity> carts) {
+        this.carts = carts;
+    }
 }

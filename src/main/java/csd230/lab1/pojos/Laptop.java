@@ -1,20 +1,14 @@
-package csd230.lab1.entities;
-
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
+package csd230.lab1.pojos;
 
 import java.util.Objects;
 
-@Entity
-@DiscriminatorValue("LAPTOP")
-public class LaptopEntity extends ElectronicsEntity {
-
+public class Laptop extends Electronics {
     private int ramGb;
     private String cpuModel;
 
-    public LaptopEntity() {}
+    public Laptop() {}
 
-    public LaptopEntity(String name, String description, double price, String brand, int warrantyMonths, int ramGb, String cpuModel) {
+    public Laptop(String name, String description, double price, String brand, int warrantyMonths, int ramGb, String cpuModel) {
         super(name, description, price, brand, warrantyMonths);
         this.ramGb = ramGb;
         this.cpuModel = cpuModel;
@@ -28,7 +22,7 @@ public class LaptopEntity extends ElectronicsEntity {
 
     @Override
     public String toString() {
-        return "LaptopEntity{" +
+        return "Laptop{" +
                 "id=" + getId() +
                 ", name='" + getName() + '\'' +
                 ", brand='" + getBrand() + '\'' +
@@ -41,7 +35,7 @@ public class LaptopEntity extends ElectronicsEntity {
     @Override
     public boolean equals(Object o) {
         if (!super.equals(o)) return false;
-        LaptopEntity that = (LaptopEntity) o;
+        Laptop that = (Laptop) o;
         return Objects.equals(getId(), that.getId());
     }
 

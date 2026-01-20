@@ -1,50 +1,51 @@
 package csd230.lab1.pojos;
 
-import csd230.lab1.entities.CartEntity;
-
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Objects;
-/**
- * DTO for {@link CartEntity}
- */
+import java.util.Set;
+
 public class Cart {
-    private List<Product> items;
+    private Long id;
+    private String customerName;
+    private Set<Product> products = new LinkedHashSet<>();
 
-    public Cart() {
+    public Cart() {}
+
+    public Cart(String customerName) {
+        this.customerName = customerName;
     }
 
-    public Cart(List<Product> items) {
-        this.items = items;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void addItem(Product item) {
-        items.add(item);
-    }
+    public String getCustomerName() { return customerName; }
+    public void setCustomerName(String customerName) { this.customerName = customerName; }
 
-    public List<Product> getItems() {
-        return items;
-    }
+    public Set<Product> getProducts() { return products; }
 
-    public void setItems(List<Product> items) {
-        this.items = items;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Cart cart)) return false;
-        return Objects.equals(getItems(), cart.getItems());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(getItems());
+    public void addProduct(Product p) {
+        if (p != null) products.add(p);
     }
 
     @Override
     public String toString() {
         return "Cart{" +
-                "items=" + items +
+                "id=" + id +
+                ", customerName='" + customerName + '\'' +
+                ", productsCount=" + products.size() +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Cart)) return false;
+        Cart cart = (Cart) o;
+        return Objects.equals(id, cart.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

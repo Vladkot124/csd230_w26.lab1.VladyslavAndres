@@ -1,39 +1,46 @@
 package csd230.lab1.pojos;
 
+import java.time.LocalDate;
+import java.util.Objects;
+
 public class Ticket extends Product {
-    public String description = "";
-    public double price = 0.0;
+    private String eventName;
+    private LocalDate eventDate;
 
-    @Override
-    public void sellItem() {
-        System.out.println("Selling Ticket: " + description + " for " + price);
+    public Ticket() {}
+
+    public Ticket(String name, String description, double price, String eventName, LocalDate eventDate) {
+        super(name, description, price);
+        this.eventName = eventName;
+        this.eventDate = eventDate;
     }
 
-    @Override
-    public double getPrice() {
-        return price;
-    }
+    public String getEventName() { return eventName; }
+    public void setEventName(String eventName) { this.eventName = eventName; }
 
-    @Override
-    public void initialize() {
-        System.out.println("Enter Description:");
-        this.description = getInput("Ticket");
-
-        System.out.println("Enter Price:");
-        this.price = getInput(0.0);
-    }
-
-    @Override
-    public void edit() {
-        System.out.println("Edit Description [" + this.description + "]:");
-        this.description = getInput(this.description);
-
-        System.out.println("Edit Price [" + this.price + "]:");
-        this.price = getInput(this.price);
-    }
+    public LocalDate getEventDate() { return eventDate; }
+    public void setEventDate(LocalDate eventDate) { this.eventDate = eventDate; }
 
     @Override
     public String toString() {
-        return "Ticket{desc='" + description + "', price=" + price + "}";
+        return "Ticket{" +
+                "id=" + getId() +
+                ", name='" + getName() + '\'' +
+                ", eventName='" + eventName + '\'' +
+                ", eventDate=" + eventDate +
+                ", price=" + getPrice() +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!super.equals(o)) return false;
+        Ticket that = (Ticket) o;
+        return Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 }

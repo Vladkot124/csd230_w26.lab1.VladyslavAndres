@@ -1,45 +1,39 @@
 package csd230.lab1.pojos;
 
-import java.util.Date;
+import java.util.Objects;
 
 public class DiscMag extends Magazine {
-    private boolean hasDisc;
+    private String discType; // CD/DVD/Bluray
 
-    public DiscMag() {
+    public DiscMag() {}
+
+    public DiscMag(String name, String description, double price, int issueNumber, String publisher, String discType) {
+        super(name, description, price, issueNumber, publisher);
+        this.discType = discType;
     }
 
-    public DiscMag(boolean hasDisc, int orderQty, Date currentIssue, String title, double price, int copies) {
-        super(orderQty, currentIssue, title, price, copies);
-        this.hasDisc = hasDisc;
-    }
-
-    @Override
-    public void initialize() {
-        super.initialize(); // Title, Qty, Date, Copies, Price
-
-        System.out.println("Has Disc? (true/false):");
-        this.hasDisc = getInput(false);
-    }
-
-    @Override
-    public void edit() {
-        super.edit(); // Title, Price, Copies, OrderQty, Date
-
-        System.out.println("Edit Has Disc [" + this.hasDisc + "]:");
-        this.hasDisc = getInput(this.hasDisc);
-    }
-
-    @Override
-    public void sellItem() {
-        System.out.println("Selling Disc Magazine (Disc: " + hasDisc + ")");
-        setCopies(getCopies() - 1);
-    }
-
-    public boolean isHasDisc() { return hasDisc; }
-    public void setHasDisc(boolean h) { this.hasDisc = h; }
+    public String getDiscType() { return discType; }
+    public void setDiscType(String discType) { this.discType = discType; }
 
     @Override
     public String toString() {
-        return "DiscMag{hasDisc=" + hasDisc + ", " + super.toString() + "}";
+        return "DiscMag{" +
+                "id=" + getId() +
+                ", name='" + getName() + '\'' +
+                ", discType='" + discType + '\'' +
+                ", price=" + getPrice() +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!super.equals(o)) return false;
+        DiscMag that = (DiscMag) o;
+        return Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 }

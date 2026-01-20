@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface DiscMagRepository extends JpaRepository<DiscMagEntity, Long> {
-    // “similar relevant query” example
-    List<DiscMagEntity> findByTitleContainingIgnoreCase(String title);
+    List<DiscMagEntity> findByDiscType(String discType);
+    List<DiscMagEntity> findByNameLike(String pattern);
 }
