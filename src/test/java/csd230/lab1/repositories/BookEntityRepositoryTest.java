@@ -11,10 +11,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class BookRepositoryTest {
+public class BookEntityRepositoryTest {
 
     @Autowired
-    private BookRepository bookRepository;
+    private BookEntityRepository bookEntityRepository;
 
     @Test
     void crud_book() {
@@ -29,23 +29,23 @@ public class BookRepositoryTest {
         );
 
         // CREATE
-        book = bookRepository.save(book);
+        book = bookEntityRepository.save(book);
         assertNotNull(book.getId());
 
         // READ
-        BookEntity found = bookRepository.findById(book.getId()).orElse(null);
+        BookEntity found = bookEntityRepository.findById(book.getId()).orElse(null);
         assertNotNull(found);
         assertEquals(book.getIsbn(), found.getIsbn());
 
         // UPDATE
         found.setPrice(99.99);
-        bookRepository.save(found);
-        BookEntity updated = bookRepository.findById(found.getId()).orElse(null);
+        bookEntityRepository.save(found);
+        BookEntity updated = bookEntityRepository.findById(found.getId()).orElse(null);
         assertNotNull(updated);
         assertEquals(99.99, updated.getPrice());
 
         // DELETE
-        bookRepository.delete(updated);
-        assertTrue(bookRepository.findById(updated.getId()).isEmpty());
+        bookEntityRepository.delete(updated);
+        assertTrue(bookEntityRepository.findById(updated.getId()).isEmpty());
     }
 }

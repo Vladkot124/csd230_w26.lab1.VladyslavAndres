@@ -61,13 +61,12 @@ public class CartEntity {
         this.products = products;
     }
 
-    // ✅ REQUIRED: maintain BOTH sides
+    // ✅ keep BOTH sides in sync
     public void addProduct(ProductEntity product) {
         this.products.add(product);
         product.getCarts().add(this);
     }
 
-    // ✅ REQUIRED: maintain BOTH sides (prevents FK delete crash later)
     public void removeProduct(ProductEntity product) {
         this.products.remove(product);
         product.getCarts().remove(this);

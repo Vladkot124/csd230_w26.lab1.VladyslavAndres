@@ -21,7 +21,6 @@ public abstract class ProductEntity {
     @Column(nullable = false)
     private double price;
 
-    // inverse side of many-to-many (CartEntity owns join table)
     @ManyToMany(mappedBy = "products")
     private Set<CartEntity> carts = new HashSet<>();
 
@@ -58,17 +57,14 @@ public abstract class ProductEntity {
         return price;
     }
 
-    // ✅ FIX for your UPDATE section
     public void setPrice(double price) {
         this.price = price;
     }
 
-    // ✅ FIX for CartEntity add/remove both sides
     public Set<CartEntity> getCarts() {
         return carts;
     }
 
-    // Optional but safe (keeps JPA from you accidentally replacing the set)
     protected void setCarts(Set<CartEntity> carts) {
         this.carts = carts;
     }

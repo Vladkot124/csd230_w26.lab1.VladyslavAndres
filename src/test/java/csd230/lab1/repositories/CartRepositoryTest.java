@@ -19,7 +19,7 @@ public class CartRepositoryTest {
     private CartRepository cartRepository;
 
     @Autowired
-    private BookRepository bookRepository;
+    private BookEntityRepository bookEntityRepository;
 
     @Autowired
     private MagazineRepository magazineRepository;
@@ -28,7 +28,7 @@ public class CartRepositoryTest {
     void crud_cart_many_to_many() {
         Faker faker = new Faker();
 
-        BookEntity b = bookRepository.save(new BookEntity(
+        BookEntity b = bookEntityRepository.save(new BookEntity(
                 faker.book().title(),
                 faker.lorem().sentence(),
                 20.00,

@@ -1,118 +1,154 @@
 classDiagram
-    CartEntity "0..*" -- "0..*" SmartphoneEntity
-    CartEntity "0..*" -- "0..*" LaptopEntity
+direction LR
 
-    ProductItem <|-- Ticket
-    ProductItem <|-- Publication
-    Publication <|-- Book
-    Publication <|-- Magazine
-    Magazine <|-- DiscMag
+%% =========================
+%% 1) POJO / Domain model
+%% =========================
 
-    SaleableItem <|.. ProductItem
-    Serializable <|.. ProductItem
+class SaleableItem {
+  <<interface>>
+  +sellItem()
+  +getPrice()
+}
 
-    ProductItem <-- CashTill
-    Cart "0..*" -- "0..*" ProductItem : contains
+class Serializable {
+  <<interface>>
+}
 
-    ProductEntity <|-- SmartphoneEntity
-    ProductEntity <|-- LaptopEntity
+class ProductItem {
+  -String productId
+}
 
-    class ProductEntity {
-        <<abstract>>
-    }
+SaleableItem <|.. ProductItem
+Serializable <|.. ProductItem
 
-    class SmartphoneEntity {
-        +String brand
-        +int warrantyMonths
-        +int storageGb
-        +boolean has5g
-    }
+class Publication {
+  <<abstract>>
+  -String title
+  -double price
+  -int copies
+  +getPrice()
+}
 
-    class LaptopEntity {
-        +String brand
-        +int warrantyMonths
-        +int ramGb
-        +String cpuModel
-    }
+class Book {
+  -String author
+  +edit()
+  +initialize()
+  +sellItem()
+}
 
-    class CartEntity
-    class Cart {
-        -Long id
-    }
+class Magazine {
+  -int orderQty
+  -java.util.Date currentIssue
+  +edit()
+  +initialize()
+  +sellItem()
+}
 
-    class ProductItem {
-        -String productId
-    }
+class DiscMag {
+  -boolean hasDisc
+  +edit()
+  +initialize()
+  +sellItem()
+}
 
-    class Serializable {
-        <<interface>>
-    }
+class Ticket {
+  +String description
+  +double price
+  +sellItem()
+}
 
-    class Ticket {
-        +String description
-        +double price
-        +sellItem()
-    }
+ProductItem <|-- Publication
+Publication <|-- Book
+Publication <|-- Magazine
+Magazine <|-- DiscMag
+ProductItem <|-- Ticket
 
-    class Publication {
-        <<abstract>>
-        -String title
-        -double price
-        -int copies
-        +getPrice()
+class Cart {
+  -Long id
+}
+Cart "0..*" -- "0..*" ProductItem : contains
 
-        +Publication()
-        +Publication(String title, double price, int copies)
-        +toString()
-        +equals()
-        +hashCode()
-    }
+class CashTill {
+  -double runningTotal
+  +showTotal()
+  +sellItem(SaleableItem item)
+}
+ProductItem <-- CashTill
 
-    class Book {
-        -String author
-        +edit()
-        +initialize()
-        +sellItem()
 
-        +Book()
-        +Book(String author)
-        +Book(String author, String title, double price, int copies)
-        +toString()
-        +equals()
-        +hashCode()
-    }
+%% =========================
+%% 2) JPA / Entity model
+%% =========================
 
-    class Magazine {
-        -int orderQty
-        -java.util.Date currentIssue
+class ProductEntity {
+  <<abstract>>
+  Long id
+  String name
+  String description
+  double price
+}
 
-        +Magazine()
-        +Magazine(int orderQty, java.util.Date currentIssue, String title, double price, int copies)
+class BookEntity {
+  String isbn
+  String author
+  Integer copies
+}
 
-        +edit()
-        +initialize()
-        +sellItem()
-    }
+class MagazineEntity {
+  int issueNumber
+  String publisher
+}
 
-    class DiscMag {
-        -boolean hasDisc
-        +edit()
-        +initialize()
-        +sellItem()
+class DiscMagEntity {
+  String discType
+}
 
-        +DiscMag()
-        +DiscMag(boolean hasDisc, int orderQty, java.util.Date currentIssue, String title, double price, int copies)
-    }
+class TicketEntity {
+  String eventName
+  LocalDate eventDate
+}
 
-    class CashTill {
-        -double runningTotal
-        +CashTill()
-        +showTotal()
-        +sellItem(SaleableItem item)
-    }
+class SmartphoneEntity {
+  String brand
+  int warrantyMonths
+  int storageGb
+  boolean has5g
+}
 
-    class SaleableItem {
-        <<interface>>
-        +sellItem()
-        +getPrice()
-    }
+class LaptopEntity {
+  String brand
+  int warrantyMonths
+  int ramGb
+  String cpuModel
+}
+
+class CartEntity {
+  Long id
+  String customerName
+  LocalDateTime createdAt
+}
+
+class OrderEntity {
+  Long id
+  LocalDateTime orderDate
+  double totalAmount
+}
+
+ProductEntity <|-- BookEntity
+ProductEntity <|-- MagazineEntity
+MagazineEntity <|-- DiscMagEntity
+ProductEntity <|-- TicketEntity
+ProductEntity <|-- SmartphoneEntity
+ProductEntity <|-- LaptopEntity
+
+CartEntity "0..*" -- "0..*" ProductEntity : cart_products
+OrderEntity "0..*" -- "0..*" ProductEntity : order_products
+
+
+%% =========================
+%% 3) Optional: mapping note
+%% (conceptual, not code)
+%% =========================
+ProductItem ..> ProductEntity : "concept maps to"
+Cart ..> CartEntity : "concept maps to"

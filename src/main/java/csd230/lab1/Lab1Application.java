@@ -16,7 +16,7 @@ import java.util.List;
 @SpringBootApplication
 public class Lab1Application implements CommandLineRunner {
 
-    private final BookRepository bookRepository;
+    private final BookEntityRepository bookEntityRepository;
     private final MagazineRepository magazineRepository;
     private final DiscMagRepository discMagRepository;
     private final TicketRepository ticketRepository;
@@ -27,7 +27,7 @@ public class Lab1Application implements CommandLineRunner {
     private final CartRepository cartRepository;
 
     public Lab1Application(
-            BookRepository bookRepository,
+            BookEntityRepository bookEntityRepository,
             MagazineRepository magazineRepository,
             DiscMagRepository discMagRepository,
             TicketRepository ticketRepository,
@@ -35,7 +35,7 @@ public class Lab1Application implements CommandLineRunner {
             LaptopRepository laptopRepository,
             CartRepository cartRepository
     ) {
-        this.bookRepository = bookRepository;
+        this.bookEntityRepository = bookEntityRepository;
         this.magazineRepository = magazineRepository;
         this.discMagRepository = discMagRepository;
         this.ticketRepository = ticketRepository;
@@ -121,8 +121,8 @@ public class Lab1Application implements CommandLineRunner {
                 "Intel i7"
         );
 
-        b1 = bookRepository.save(b1);
-        b2 = bookRepository.save(b2);
+        b1 = bookEntityRepository.save(b1);
+        b2 = bookEntityRepository.save(b2);
         m1 = magazineRepository.save(m1);
         d1 = discMagRepository.save(d1);
         t1 = ticketRepository.save(t1);
@@ -163,26 +163,26 @@ public class Lab1Application implements CommandLineRunner {
         // =========================================
         System.out.println("\n=== STEP 3: READ (findAll + queries) ===");
 
-        List<BookEntity> allBooks = bookRepository.findAll();
+        List<BookEntity> allBooks = bookEntityRepository.findAll();
         System.out.println("All books: " + allBooks);
 
-        List<BookEntity> byIsbn = bookRepository.findByIsbn(b1.getIsbn());
-        System.out.println("Books by ISBN (b1): " + byIsbn);
-
-        List<BookEntity> nameLike = bookRepository.findByNameLike("%a%");
-        System.out.println("Books name LIKE '%a%': " + nameLike);
-
-        List<BookEntity> priceRange = bookRepository.findBooksInPriceRange(10.0, 150.0);
-        System.out.println("Books price range 10-150: " + priceRange);
+//        List<BookEntity> byIsbn = bookEntityRepository.findByIsbn(b1.getIsbn());
+//        System.out.println("Books by ISBN (b1): " + byIsbn);
+//
+//        List<BookEntity> nameLike = bookEntityRepository.findByNameLike("%a%");
+//        System.out.println("Books name LIKE '%a%': " + nameLike);
+//
+//        List<BookEntity> priceRange = bookEntityRepository.findBooksInPriceRange(10.0, 150.0);
+//        System.out.println("Books price range 10-150: " + priceRange);
 
         // =========================================
         // STEP 4: UPDATE
         // =========================================
         System.out.println("\n=== STEP 4: UPDATE ===");
 
-        BookEntity toUpdate = bookRepository.findById(b1.getId()).orElseThrow();
+        BookEntity toUpdate = bookEntityRepository.findById(b1.getId()).orElseThrow();
         toUpdate.setPrice(toUpdate.getPrice() + 10.0);
-        BookEntity updated = bookRepository.save(toUpdate);
+        BookEntity updated = bookEntityRepository.save(toUpdate);
 
         System.out.printf("Updated book: id=%d, name='%s', price=%.2f%n",
                 updated.getId(), updated.getName(), updated.getPrice());
