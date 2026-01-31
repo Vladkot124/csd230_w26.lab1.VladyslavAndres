@@ -23,6 +23,8 @@ public abstract class ProductEntity {
 
     @ManyToMany(mappedBy = "products")
     private Set<CartEntity> carts = new HashSet<>();
+    @ManyToMany(mappedBy = "products")
+    private Set<OrderEntity> orders = new HashSet<>();
 
     protected ProductEntity() {
     }
@@ -67,5 +69,9 @@ public abstract class ProductEntity {
 
     protected void setCarts(Set<CartEntity> carts) {
         this.carts = carts;
+    }
+
+    public Set<OrderEntity> getOrders() {
+        return orders;
     }
 }

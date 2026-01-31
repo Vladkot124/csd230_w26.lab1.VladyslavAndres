@@ -61,7 +61,7 @@ public class CartEntity {
         this.products = products;
     }
 
-    // ✅ keep BOTH sides in sync
+
     public void addProduct(ProductEntity product) {
         this.products.add(product);
         product.getCarts().add(this);
@@ -80,5 +80,9 @@ public class CartEntity {
                 ", productsCount=" + (products == null ? 0 : products.size()) +
                 ", createdAt=" + createdAt +
                 '}';
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 }

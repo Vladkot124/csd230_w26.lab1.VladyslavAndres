@@ -1,85 +1,77 @@
 package csd230.lab1.controllers;
 
-import csd230.lab1.entities.*;
-import csd230.lab1.repositories.*;
+import csd230.lab1.entities.BookEntity;
+import csd230.lab1.entities.CartEntity;
+import csd230.lab1.entities.OrderEntity;
+import csd230.lab1.entities.ProductEntity;
+import csd230.lab1.repositories.CartRepository;
+import csd230.lab1.repositories.OrderEntityRepository;
+import csd230.lab1.repositories.ProductRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
-@RequestMapping("/cart")
 public class CartController {
 
-    private final CartRepository cartRepo;
-    private final ProductRepository productRepo;
-    private final OrderEntityRepository orderRepo;
-    private final BookEntityRepository bookRepo;
+    private final CartRepository cartRepository;
+    private final ProductRepository productRepository;
+    private final OrderEntityRepository orderEntityRepository;
 
-    public CartController(CartRepository cartRepo,
-                          ProductRepository productRepo,
-                          OrderEntityRepository orderRepo,
-                          BookEntityRepository bookRepo) {
-        this.cartRepo = cartRepo;
-        this.productRepo = productRepo;
-        this.orderRepo = orderRepo;
-        this.bookRepo = bookRepo;
+    public CartController(
+            CartRepository cartRepository,
+            ProductRepository productRepository,
+            OrderEntityRepository orderEntityRepository
+    ) {
+        this.cartRepository = cartRepository;
+        this.productRepository = productRepository;
+        this.orderEntityRepository = orderEntityRepository;
     }
 
-    // helper: always use cart id 1
-    private CartEntity getDefaultCart() {
-        return cartRepo.findById(1L).orElseGet(() -> {
-            CartEntity c = new CartEntity("Default Customer");
-            // ensure id=1 exists only if DB empty; otherwise it will auto-id
-            return cartRepo.save(c);
+    @GetMapping("/cart")
+    public String cartDetails(Model model) {
+        CartEntity cart = cartRepository.findById(1L).orElseGet(() -> {
+            CartEntity c = new CartEntity("Vlad Customer");
+            // IMPORTANT: if your setId(long) exists and you really want ID=1 fixed:
+            // c.setId(1L);  // only do this if you MUST force ID=1
+            return cartRepository.save(c);
         });
-    }
 
-    // VIEW CART
-    @GetMapping
-    public String viewCart(Model model) {
-        CartEntity cart = getDefaultCart();
+        double total = cart.getProducts()
+                .stream()
+                .mapToDouble(ProductEntity::getPrice)
+                .sum();
+
         model.addAttribute("cart", cart);
-
-        double total = 0.0;
-        for (ProductEntity p : cart.getProducts()) {
-            total += p.getPrice();
-        }
         model.addAttribute("total", total);
 
         return "cartDetails";
     }
 
-    // ADD PRODUCT TO CART
-    @PostMapping("/add/{productId}")
+    @PostMapping("/cart/add/{productId}")
     public String addToCart(@PathVariable Long productId) {
-        CartEntity cart = getDefaultCart();
-        ProductEntity product = productRepo.findById(productId).orElse(null);
-        if (product != null) {
-            cart.addProduct(product);
-            cartRepo.save(cart);
-        }
+        CartEntity cart = cartRepository.findById(1L).orElseThrow();
+        ProductEntity product = productRepository.findById(productId).orElseThrow();
+        cart.getProducts().add(product);
+        cartRepository.save(cart);
         return "redirect:/cart";
     }
 
-    // REMOVE PRODUCT FROM CART
-    @PostMapping("/remove/{productId}")
+    @PostMapping("/cart/remove/{productId}")
     public String removeFromCart(@PathVariable Long productId) {
-        CartEntity cart = getDefaultCart();
-        ProductEntity product = productRepo.findById(productId).orElse(null);
-        if (product != null) {
-            cart.removeProduct(product);
-            cartRepo.save(cart);
-        }
+        CartEntity cart = cartRepository.findById(1L).orElseThrow();
+        cart.getProducts().removeIf(p -> p.getId().equals(productId));
+        cartRepository.save(cart);
         return "redirect:/cart";
     }
 
-
-    @PostMapping("/checkout")
+    @PostMapping("/cart/checkout")
     public String checkout() {
-        CartEntity cart = getDefaultCart();
-
+        CartEntity cart = cartRepository.findById(1L).orElseThrow();
         if (cart.getProducts().isEmpty()) {
             return "redirect:/cart";
         }
@@ -88,38 +80,29 @@ public class CartController {
         order.setOrderDate(LocalDateTime.now());
 
         double total = 0.0;
+        List<ProductEntity> purchased = new ArrayList<>();
 
-        // process each product
         for (ProductEntity p : cart.getProducts()) {
             total += p.getPrice();
+            purchased.add(p);
 
-            // decrement copies only for BookEntity
             if (p instanceof BookEntity book) {
-                Integer current = book.getCopies();
-                if (current == null) current = 5; // treat old DB NULL as 5
-
-                if (current > 0) {
-                    book.setCopies(current - 1);
-                    bookRepo.save(book);
+                int copies = book.getCopies();
+                if (copies > 0) {
+                    book.setCopies(copies - 1);
+                    productRepository.save(book);
                 }
-
             }
-
-            order.addProduct(p);
         }
 
         order.setTotalAmount(total);
+        order.getProducts().addAll(purchased);
 
-        // save order first
-        OrderEntity savedOrder = orderRepo.save(order);
+        cart.getProducts().clear();
 
-        // clear cart (use removeProduct to keep both sides consistent)
-        // IMPORTANT: avoid ConcurrentModification by copying set
-        for (ProductEntity p : new java.util.HashSet<>(cart.getProducts())) {
-            cart.removeProduct(p);
-        }
-        cartRepo.save(cart);
+        orderEntityRepository.save(order);
+        cartRepository.save(cart);
 
-        return "redirect:/orders/" + savedOrder.getId();
+        return "redirect:/orders/" + order.getId();
     }
 }

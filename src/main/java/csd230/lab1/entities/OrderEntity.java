@@ -2,7 +2,7 @@ package csd230.lab1.entities;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Entity
@@ -13,9 +13,9 @@ public class OrderEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDateTime orderDate;
-
     private double totalAmount;
+
+    private LocalDateTime orderDate;
 
     @ManyToMany
     @JoinTable(
@@ -23,36 +23,34 @@ public class OrderEntity {
             joinColumns = @JoinColumn(name = "order_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id")
     )
-    private Set<ProductEntity> products = new HashSet<>();
+    private Set<ProductEntity> products = new LinkedHashSet<>();
 
     public OrderEntity() {
+        this.orderDate = LocalDateTime.now();
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public LocalDateTime getOrderDate() {
-        return orderDate;
-    }
-
-    public void setOrderDate(LocalDateTime orderDate) {
-        this.orderDate = orderDate;
-    }
-
-    public double getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(double totalAmount) {
+    public OrderEntity(double totalAmount) {
         this.totalAmount = totalAmount;
-    }
-
-    public Set<ProductEntity> getProducts() {
-        return products;
+        this.orderDate = LocalDateTime.now();
     }
 
     public void addProduct(ProductEntity product) {
         this.products.add(product);
+        product.getOrders().add(this);
     }
+
+    public void removeProduct(ProductEntity product) {
+        this.products.remove(product);
+        product.getOrders().remove(this);
+    }
+
+    public Long getId() { return id; }
+    public double getTotalAmount() { return totalAmount; }
+    public LocalDateTime getOrderDate() { return orderDate; }
+    public Set<ProductEntity> getProducts() { return products; }
+
+    public void setId(Long id) { this.id = id; }
+    public void setTotalAmount(double totalAmount) { this.totalAmount = totalAmount; }
+    public void setOrderDate(LocalDateTime orderDate) { this.orderDate = orderDate; }
+    public void setProducts(Set<ProductEntity> products) { this.products = products; }
 }

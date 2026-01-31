@@ -1,5 +1,6 @@
 package csd230.lab1.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
@@ -10,8 +11,10 @@ public class BookEntity extends ProductEntity {
     private String isbn;
     private String author;
 
-    // ✅ Option B: Integer allows NULL from DB
+    @Column(nullable = true)
     private Integer copies;
+
+
 
     public BookEntity() {
     }
