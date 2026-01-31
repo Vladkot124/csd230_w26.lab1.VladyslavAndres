@@ -18,9 +18,7 @@ public class OrderController {
 
     @GetMapping("/{id}")
     public String orderDetails(@PathVariable Long id, Model model) {
-        OrderEntity order = orderRepo.findById(id).orElse(null);
-        if (order == null) return "redirect:/cart";
-
+        OrderEntity order = orderRepo.findById(id).orElseThrow();
         model.addAttribute("order", order);
         return "orderDetails";
     }

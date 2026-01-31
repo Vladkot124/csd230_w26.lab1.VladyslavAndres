@@ -1,91 +1,77 @@
 package csd230.lab1.controllers;
 
 import csd230.lab1.entities.BookEntity;
-import csd230.lab1.entities.ProductEntity;
 import csd230.lab1.repositories.BookEntityRepository;
-import csd230.lab1.repositories.ProductRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/books")
 public class BookController {
 
-    private final ProductRepository productRepository;
+    private final BookEntityRepository bookRepo;
 
-    public BookController(ProductRepository productRepository) {
-        this.productRepository = productRepository;
+    public BookController(BookEntityRepository bookRepo) {
+        this.bookRepo = bookRepo;
     }
 
+    // LIST
     @GetMapping
     public String list(Model model) {
-        List<ProductEntity> all = productRepository.findAll();
-        List<BookEntity> books = all.stream()
-                .filter(p -> p instanceof BookEntity)
-                .map(p -> (BookEntity) p)
-                .toList();
-
-        model.addAttribute("books", books);
+        model.addAttribute("books", bookRepo.findAll());
         return "bookList";
     }
 
+    // DETAILS
     @GetMapping("/{id}")
     public String details(@PathVariable Long id, Model model) {
-        ProductEntity p = productRepository.findById(id).orElseThrow();
-        if (!(p instanceof BookEntity book)) {
-            return "redirect:/books";
-        }
+        BookEntity book = bookRepo.findById(id).orElseThrow();
         model.addAttribute("book", book);
         return "bookDetails";
     }
 
+    // ADD (GET form)
     @GetMapping("/add")
     public String addForm(Model model) {
         model.addAttribute("book", new BookEntity());
         return "addBook";
     }
 
+    // ADD (POST)
     @PostMapping("/add")
-    public String addSubmit(@ModelAttribute("book") BookEntity book) {
-        productRepository.save(book);
+    public String addSubmit(@ModelAttribute BookEntity book) {
+        if (book.getCopies() == null) book.setCopies(0);
+        bookRepo.save(book);
         return "redirect:/books";
     }
 
+    // EDIT (GET form)
     @GetMapping("/edit/{id}")
     public String editForm(@PathVariable Long id, Model model) {
-        ProductEntity p = productRepository.findById(id).orElseThrow();
-        if (!(p instanceof BookEntity book)) {
-            return "redirect:/books";
-        }
+        BookEntity book = bookRepo.findById(id).orElseThrow();
         model.addAttribute("book", book);
         return "editBook";
     }
 
+    // EDIT (POST)
     @PostMapping("/edit/{id}")
-    public String editSubmit(@PathVariable Long id, @ModelAttribute("book") BookEntity formBook) {
-        ProductEntity p = productRepository.findById(id).orElseThrow();
-        if (!(p instanceof BookEntity book)) {
-            return "redirect:/books";
-        }
-
+    public String editSubmit(@PathVariable Long id, @ModelAttribute BookEntity formBook) {
+        BookEntity book = bookRepo.findById(id).orElseThrow();
         book.setName(formBook.getName());
-        book.setDescription(formBook.getDescription());
-        book.setPrice(formBook.getPrice());
         book.setAuthor(formBook.getAuthor());
         book.setIsbn(formBook.getIsbn());
-        book.setCopies(formBook.getCopies());
-
-        productRepository.save(book);
+        book.setPrice(formBook.getPrice());
+        book.setCopies(formBook.getCopies() == null ? 0 : formBook.getCopies());
+        book.setDescription(formBook.getDescription());
+        bookRepo.save(book);
         return "redirect:/books";
     }
 
-    @GetMapping("/delete/{id}")
+    // DELETE (POST)
+    @PostMapping("/delete/{id}")
     public String delete(@PathVariable Long id) {
-        productRepository.deleteById(id);
+        bookRepo.deleteById(id); // ✅ NOT static
         return "redirect:/books";
     }
-
 }
